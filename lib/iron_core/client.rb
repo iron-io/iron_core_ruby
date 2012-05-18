@@ -112,8 +112,6 @@ module IronCore
       @rest.put(url + method, request_hash)
     end
 
-
-
     def delete(method, params = {})
       request_hash = {}
       request_hash[:headers] = common_request_hash
