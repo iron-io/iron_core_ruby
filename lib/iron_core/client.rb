@@ -70,7 +70,7 @@ module IronCore
       res
     end
 
-    def common_request_hash
+    def common_headers
       {
         'Content-Type' => 'application/json',
         'Authorization' => "OAuth #{@token}",
@@ -84,7 +84,7 @@ module IronCore
 
     def get(method, params = {})
       request_hash = {}
-      request_hash[:headers] = common_request_hash
+      request_hash[:headers] = common_headers
       request_hash[:params] = params
 
       IronCore::Logger.debug 'IronCore', "GET #{url + method} with params='#{request_hash.to_s}'"
@@ -94,7 +94,7 @@ module IronCore
 
     def post(method, params = {})
       request_hash = {}
-      request_hash[:headers] = common_request_hash
+      request_hash[:headers] = common_headers
       request_hash[:body] = params.to_json
 
       IronCore::Logger.debug 'IronCore', "POST #{url + method} with params='#{request_hash.to_s}'" 
@@ -104,7 +104,7 @@ module IronCore
 
     def put(method, params={})
       request_hash = {}
-      request_hash[:headers] = common_request_hash
+      request_hash[:headers] = common_headers
       request_hash[:body] = params.to_json
 
       IronCore::Logger.debug 'IronCore', "PUT #{url + method} with params='#{request_hash.to_s}'"
@@ -114,7 +114,7 @@ module IronCore
 
     def delete(method, params = {})
       request_hash = {}
-      request_hash[:headers] = common_request_hash
+      request_hash[:headers] = common_headers
       request_hash[:params] = params
 
       IronCore::Logger.debug 'IronCore', "DELETE #{url + method} with params='#{request_hash.to_s}'"
