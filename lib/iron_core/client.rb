@@ -20,6 +20,7 @@ module IronCore
 
       load_from_hash(options)
       load_from_config(product, options[:config_file] || options['config_file'])
+      load_from_config(product, '.iron.json')
       load_from_config(product, 'iron.json')
       load_from_env('IRON_' + product.upcase)
       load_from_env('IRON')
