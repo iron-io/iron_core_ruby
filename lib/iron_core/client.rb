@@ -140,8 +140,8 @@ module IronCore
 
       raise IronCore::IronResponseError.new(response) if response.code != 200
 
-      return response.body unless parse_json
-      JSON.parse(response.body)
+      return response.to_s unless parse_json
+      JSON.parse(response.to_s)
     end
   end
 end
