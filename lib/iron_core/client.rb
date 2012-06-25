@@ -18,7 +18,7 @@ module IronCore
     def initialize(product, options = {}, extra_options_list = [])
       @options_list = [:token, :project_id, :scheme, :host, :port, :api_version, :user_agent] + extra_options_list
 
-      load_from_hash(options)
+      load_from_hash('params', options)
       load_from_config(product, options[:config_file] || options['config_file'])
       load_from_config(product, '.iron.json')
       load_from_config(product, 'iron.json')
@@ -29,23 +29,25 @@ module IronCore
       @rest = Rest::Client.new
     end
 
-    def set_option(name, value)
-      if send(name.to_s).nil?
+    def set_option(source, name, value)
+      if send(name.to_s).nil? && (not value.nil?)
+        IronCore::Logger.debug 'IronCore', "Setting #{name} to #{value} from #{source}"
+
         send(name.to_s + '=', value)
       end
     end
 
-    def load_from_hash(hash)
+    def load_from_hash(source, hash)
       return if hash.nil?
 
       @options_list.each do |o|
-        set_option(o, hash[o.to_sym] || hash[o.to_s])
+        set_option(source, o, hash[o.to_sym] || hash[o.to_s])
       end
     end
 
     def load_from_env(prefix)
       @options_list.each do |o|
-        set_option(o, ENV[prefix + '_' + o.to_s.upcase])
+        set_option('environment variable', o, ENV[prefix + '_' + o.to_s.upcase])
       end
     end
 
@@ -55,9 +57,9 @@ module IronCore
       if File.exists?(File.expand_path(config_file))
         config = JSON.load(File.read(File.expand_path(config_file)))
 
-        load_from_hash(config['iron_' + product])
-        load_from_hash(config['iron'])
-        load_from_hash(config)
+        load_from_hash(config_file, config['iron_' + product])
+        load_from_hash(config_file, config['iron'])
+        load_from_hash(config_file, config)
       end
     end
 
