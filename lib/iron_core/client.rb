@@ -142,8 +142,13 @@ module IronCore
 
       raise IronCore::IronResponseError.new(response) if response.code != 200
 
-      return response.body unless parse_json
-      JSON.parse(response.body)
+      # response in rest_client gem is a confusing object, of class String,
+      # but with 'to_i' redefined to return response code and
+      # 'body' defined to return itself
+      body = String.new(response.body)
+
+      return body unless parse_json
+      JSON.parse(body)
     end
   end
 end

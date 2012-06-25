@@ -1,4 +1,4 @@
 module IronCore
-  class IronError < Exception
+  class IronError < StandardError
   end
 end
