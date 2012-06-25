@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "iron_core"
-  s.version = "0.1.3"
+  s.version = "0.1.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrew Kirilenko", "Iron.io, Inc"]
-  s.date = "2012-06-09"
+  s.date = "2012-06-25"
   s.description = "Core library for Iron products"
   s.email = "info@iron.io"
   s.extra_rdoc_files = [
