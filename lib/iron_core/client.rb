@@ -134,7 +134,11 @@ module IronCore
 
       IronCore::Logger.debug 'IronCore', "POST #{url + method + "?oauth=" + @token} with params='#{request_hash.to_s}'"
 
-      RestClient.post(url + method + "?oauth=#{@token}", request_hash) 
+      begin
+        RestClient.post(url + method + "?oauth=#{@token}", request_hash)
+      rescue RestClient::Unauthorized => e
+        raise IronCore::IronResponseError.new(e.response)
+      end
     end
 
     def parse_response(response, parse_json = true)
