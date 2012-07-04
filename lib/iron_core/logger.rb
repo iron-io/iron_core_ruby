@@ -47,7 +47,7 @@ module IronCore
 
     def self.raise_exception(msg, exception_class)
       unless exception_class.nil?
-        raise excpetion_classs.new(msg)
+        raise exception_class.new(msg)
       end
     end
   end
