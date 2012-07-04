@@ -5,6 +5,7 @@ GEM
     jeweler2 (2.0.9)
       git (>= 1.2.5)
     mime-types (1.19)
+    rake (0.9.2.2)
     rest (1.1.0)
       rest-client (>= 0.3.0)
     rest-client (1.6.7)
@@ -14,7 +15,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (> 1.0.0)
   jeweler2
-  rest
-  rest-client
+  rake
+  rest (> 0.3.0)

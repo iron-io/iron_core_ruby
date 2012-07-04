@@ -1,7 +1,7 @@
-require_relative 'iron_error'
+require_relative 'error'
 
 module IronCore
-  class IronResponseError < IronCore::IronError
+  class ResponseError < IronCore::Error
     def initialize(response)
       super(response.body)
 

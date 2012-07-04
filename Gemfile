@@ -1,9 +1,8 @@
 source 'http://rubygems.org'
 
-gem 'rest-client'
-gem 'rest'
-gem 'bundler', '> 1.0.0'
+gem 'rest', '> 0.3.0'
 
 group :development do
+  gem 'rake'
   gem 'jeweler2'
 end

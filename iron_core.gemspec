@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "iron_core"
-  s.version = "0.1.6"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrew Kirilenko", "Iron.io, Inc"]
@@ -20,9 +20,9 @@ Gem::Specification.new do |s|
     "VERSION",
     "lib/iron_core.rb",
     "lib/iron_core/client.rb",
-    "lib/iron_core/iron_error.rb",
-    "lib/iron_core/iron_response_error.rb",
+    "lib/iron_core/error.rb",
     "lib/iron_core/logger.rb",
+    "lib/iron_core/response_error.rb",
     "lib/iron_core/version.rb"
   ]
   s.homepage = "https://github.com/iron-io/iron_core_ruby"
@@ -34,20 +34,17 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<rest-client>, [">= 0"])
-      s.add_runtime_dependency(%q<rest>, [">= 0"])
-      s.add_runtime_dependency(%q<bundler>, ["> 1.0.0"])
+      s.add_runtime_dependency(%q<rest>, ["> 0.3.0"])
+      s.add_development_dependency(%q<rake>, [">= 0"])
       s.add_development_dependency(%q<jeweler2>, [">= 0"])
     else
-      s.add_dependency(%q<rest-client>, [">= 0"])
-      s.add_dependency(%q<rest>, [">= 0"])
-      s.add_dependency(%q<bundler>, ["> 1.0.0"])
+      s.add_dependency(%q<rest>, ["> 0.3.0"])
+      s.add_dependency(%q<rake>, [">= 0"])
       s.add_dependency(%q<jeweler2>, [">= 0"])
     end
   else
-    s.add_dependency(%q<rest-client>, [">= 0"])
-    s.add_dependency(%q<rest>, [">= 0"])
-    s.add_dependency(%q<bundler>, ["> 1.0.0"])
+    s.add_dependency(%q<rest>, ["> 0.3.0"])
+    s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<jeweler2>, [">= 0"])
   end
 end

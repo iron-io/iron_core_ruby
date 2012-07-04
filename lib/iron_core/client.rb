@@ -1,37 +1,49 @@
-require 'rest-client'
 require 'rest'
 require 'json'
 
-require_relative 'iron_response_error'
+require_relative 'response_error'
 
 module IronCore
   class Client
-    attr_accessor :token
-    attr_accessor :project_id
+    attr_accessor :headers
+    attr_accessor :content_type
 
-    attr_accessor :scheme
-    attr_accessor :host
-    attr_accessor :port
-    attr_accessor :api_version
-    attr_accessor :user_agent
+    def initialize(company, product, options = {}, default_options = {}, extra_options_list = [])
+      @options_list = [:scheme, :host, :port, :user_agent, :http_gem] + extra_options_list
 
-    def initialize(product, options = {}, extra_options_list = [])
-      @options_list = [:token, :project_id, :scheme, :host, :port, :api_version, :user_agent] + extra_options_list
+      metaclass = class << self
+        self
+      end
+
+      @options_list.each do |option|
+        metaclass.send(:define_method, option.to_s) do
+          instance_variable_get('@' + option.to_s)
+        end
+
+        metaclass.send(:define_method, option.to_s + '=') do |value|
+          instance_variable_set('@' + option.to_s, value)
+        end
+      end
 
       load_from_hash('params', options)
-      load_from_config(product, options[:config_file] || options['config_file'])
-      load_from_config(product, '.iron.json')
-      load_from_config(product, 'iron.json')
-      load_from_env('IRON_' + product.upcase)
-      load_from_env('IRON')
-      load_from_config(product, '~/.iron.json')
+      load_from_config(company, product, options[:config_file] || options['config_file'])
+      load_from_config(company, product, ".#{company}.json")
+      load_from_config(company, product, "#{company}.json")
+      load_from_env(company.upcase + '_' + product.upcase)
+      load_from_env(company.upcase)
+      load_from_config(company, product, "~/.#{company}.json")
+      load_from_hash('defaults', default_options)
+      load_from_hash('defaults', {:user_agent => 'iron_core_ruby-' + IronCore.version, :http_gem => :rest_client})
 
-      @rest = Rest::Client.new() # :gem=>:rest_client - can set specific backend if we want. Should allow user to set this too.
+      @headers = {}
+      @content_type = 'application/json'
+
+      @rest = Rest::Client.new(:gem => @http_gem.to_sym)
     end
 
     def set_option(source, name, value)
       if send(name.to_s).nil? && (not value.nil?)
-        IronCore::Logger.debug 'IronCore', "Setting #{name} to #{value} from #{source}"
+        IronCore::Logger.debug 'IronCore', "Setting #{name} to '#{value}' from #{source}"
 
         send(name.to_s + '=', value)
       end
@@ -51,43 +63,39 @@ module IronCore
       end
     end
 
-    def load_from_config(product, config_file)
+    def load_from_config(company, product, config_file)
       return if config_file.nil?
 
       if File.exists?(File.expand_path(config_file))
         config = JSON.load(File.read(File.expand_path(config_file)))
 
-        load_from_hash(config_file, config['iron_' + product])
-        load_from_hash(config_file, config['iron'])
+        load_from_hash(config_file, config["#{company}_#{product}"])
+        load_from_hash(config_file, config[company])
         load_from_hash(config_file, config)
       end
     end
 
-    def options
+    def options(return_strings = false)
       res = {}
 
-      @options_list.each do |o|
-        res[o.to_sym] = send(o.to_s)
+      @options_list.each do |option|
+        res[return_strings ? option.to_s : option.to_sym] = send(option.to_s)
       end
 
       res
     end
 
     def common_headers
-      {
-        'Content-Type' => 'application/json',
-        'Authorization' => "OAuth #{@token}",
-        'User-Agent' => @user_agent
-      }
+      {'User-Agent' => @user_agent}
     end
 
     def url
-      "#{scheme}://#{host}:#{port}/#{api_version}/"
+      "#{scheme}://#{host}:#{port}/"
     end
 
     def get(method, params = {})
       request_hash = {}
-      request_hash[:headers] = common_headers
+      request_hash[:headers] = common_headers.merge(@headers)
       request_hash[:params] = params
 
       IronCore::Logger.debug 'IronCore', "GET #{url + method} with params='#{request_hash.to_s}'"
@@ -97,7 +105,7 @@ module IronCore
 
     def post(method, params = {})
       request_hash = {}
-      request_hash[:headers] = common_headers
+      request_hash[:headers] = common_headers.merge(@headers).merge({'Content-Type' => @content_type})
       request_hash[:body] = params.to_json
 
       IronCore::Logger.debug 'IronCore', "POST #{url + method} with params='#{request_hash.to_s}'" 
@@ -107,7 +115,7 @@ module IronCore
 
     def put(method, params={})
       request_hash = {}
-      request_hash[:headers] = common_headers
+      request_hash[:headers] = common_headers.merge(@headers).merge({'Content-Type' => @content_type})
       request_hash[:body] = params.to_json
 
       IronCore::Logger.debug 'IronCore', "PUT #{url + method} with params='#{request_hash.to_s}'"
@@ -117,7 +125,7 @@ module IronCore
 
     def delete(method, params = {})
       request_hash = {}
-      request_hash[:headers] = common_headers
+      request_hash[:headers] = common_headers.merge(@headers)
       request_hash[:params] = params
 
       IronCore::Logger.debug 'IronCore', "DELETE #{url + method} with params='#{request_hash.to_s}'"
@@ -125,33 +133,25 @@ module IronCore
       @rest.delete(url + method, request_hash)
     end
 
-    # FIXME: retries support
-    # FIXME: user agent support
-    def post_file(method, file, params = {})
+    def post_file(method, file_field, file, params_field, params = {})
       request_hash = {}
-      request_hash[:data] = params.to_json
-      request_hash[:file] = file
+      request_hash[:headers] = common_headers.merge(@headers)
+      request_hash[:body] = {params_field => params.to_json, file_field => file}
 
-      IronCore::Logger.debug 'IronCore', "POST #{url + method + "?oauth=" + @token} with params='#{request_hash.to_s}'"
+      IronCore::Logger.debug 'IronCore', "POST #{url + method} with params='#{request_hash.to_s}'"
 
-      begin
-        RestClient.post(url + method + "?oauth=#{@token}", request_hash)
-      rescue RestClient::Unauthorized => e
-        raise IronCore::IronResponseError.new(e.response)
-      end
+      @rest.post_file(url + method, request_hash)
     end
 
     def parse_response(response, parse_json = true)
       IronCore::Logger.debug 'IronCore', "GOT #{response.code} with params='#{response.body}'"
 
-      raise IronCore::IronResponseError.new(response) if response.code != 200
+      raise IronCore::ResponseError.new(response) if response.code != 200
 
-      # response in rest_client gem is a confusing object, of class String,
-      # but with 'to_i' redefined to return response code and
-      # 'body' defined to return itself
       body = String.new(response.body)
 
       return body unless parse_json
+
       JSON.parse(body)
     end
   end
