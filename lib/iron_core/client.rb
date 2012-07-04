@@ -26,8 +26,7 @@ module IronCore
       load_from_env('IRON')
       load_from_config(product, '~/.iron.json')
 
-      # Should switch to net-http-persistent
-      @rest = Rest::Client.new(:gem=>:rest_client)
+      @rest = Rest::Client.new() # :gem=>:rest_client - can set specific backend if we want. Should allow user to set this too.
     end
 
     def set_option(source, name, value)
