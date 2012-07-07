@@ -27,13 +27,13 @@ module IronCore
 
       load_from_hash('params', options)
       load_from_config(company, product, options[:config_file] || options['config_file'])
-      load_from_config(company, product, ".#{company}.json")
-      load_from_config(company, product, "#{company}.json")
       load_from_env(company.upcase + '_' + product.upcase)
       load_from_env(company.upcase)
+      load_from_config(company, product, ".#{company}.json")
+      load_from_config(company, product, "#{company}.json")
       load_from_config(company, product, "~/.#{company}.json")
       load_from_hash('defaults', default_options)
-      load_from_hash('defaults', {:user_agent => 'iron_core_ruby-' + IronCore.version, :http_gem => :rest_client})
+      load_from_hash('defaults', {:user_agent => 'iron_core_ruby-' + IronCore.version})
 
       @headers = {}
       @content_type = 'application/json'
