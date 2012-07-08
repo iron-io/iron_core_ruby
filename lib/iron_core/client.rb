@@ -40,7 +40,9 @@ module IronCore
       @headers = {}
       @content_type = 'application/json'
 
-      @rest = Rest::Client.new(:gem => @http_gem.to_sym)
+      http_gem = @http_gem.nil? ? nil : @http_gem.to_sym
+
+      @rest = Rest::Client.new(http_gem)
     end
 
     def set_option(source, name, value)
