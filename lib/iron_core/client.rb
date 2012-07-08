@@ -26,7 +26,9 @@ module IronCore
       end
 
       load_from_hash('params', options)
-      load_from_config(company, product, options[:config_file] || options['config_file'])
+      load_from_config(company, product, options[:config] || options['config'])
+      load_from_config(company, product, ENV[company.upcase + '_' + product.upcase + '_CONFIG'])
+      load_from_config(company, product, ENV[company.upcase + '_CONFIG'])
       load_from_env(company.upcase + '_' + product.upcase)
       load_from_env(company.upcase)
       load_from_config(company, product, ".#{company}.json")
