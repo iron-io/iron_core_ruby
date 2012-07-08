@@ -42,7 +42,7 @@ module IronCore
 
       http_gem = @http_gem.nil? ? nil : @http_gem.to_sym
 
-      @rest = Rest::Client.new(http_gem)
+      @rest = Rest::Client.new(:gem => http_gem)
     end
 
     def set_option(source, name, value)
