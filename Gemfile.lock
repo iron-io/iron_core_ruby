@@ -5,8 +5,10 @@ GEM
     jeweler2 (2.0.9)
       git (>= 1.2.5)
     mime-types (1.19)
+    net-http-persistent (2.7)
     rake (0.9.2.2)
-    rest (1.1.0)
+    rest (1.2.1)
+      net-http-persistent
       rest-client (>= 0.3.0)
     rest-client (1.6.7)
       mime-types (>= 1.16)
@@ -17,4 +19,4 @@ PLATFORMS
 DEPENDENCIES
   jeweler2
   rake
-  rest (> 0.3.0)
+  rest (>= 1.2.1)
