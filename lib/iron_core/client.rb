@@ -5,7 +5,6 @@ require_relative 'response_error'
 
 module IronCore
   class Client
-    attr_accessor :headers
     attr_accessor :content_type
 
     def initialize(company, product, options = {}, default_options = {}, extra_options_list = [])
@@ -37,7 +36,6 @@ module IronCore
       load_from_hash('defaults', default_options)
       load_from_hash('defaults', {:user_agent => 'iron_core_ruby-' + IronCore.version})
 
-      @headers = {}
       @content_type = 'application/json'
 
       http_gem = @http_gem.nil? ? nil : @http_gem.to_sym
@@ -89,7 +87,7 @@ module IronCore
       res
     end
 
-    def common_headers
+    def headers
       {'User-Agent' => @user_agent}
     end
 
@@ -99,7 +97,7 @@ module IronCore
 
     def get(method, params = {})
       request_hash = {}
-      request_hash[:headers] = common_headers.merge(@headers)
+      request_hash[:headers] = headers
       request_hash[:params] = params
 
       IronCore::Logger.debug 'IronCore', "GET #{url + method} with params='#{request_hash.to_s}'"
@@ -109,7 +107,7 @@ module IronCore
 
     def post(method, params = {})
       request_hash = {}
-      request_hash[:headers] = common_headers.merge(@headers).merge({'Content-Type' => @content_type})
+      request_hash[:headers] = headers.merge({'Content-Type' => @content_type})
       request_hash[:body] = params.to_json
 
       IronCore::Logger.debug 'IronCore', "POST #{url + method} with params='#{request_hash.to_s}'" 
@@ -119,7 +117,7 @@ module IronCore
 
     def put(method, params={})
       request_hash = {}
-      request_hash[:headers] = common_headers.merge(@headers).merge({'Content-Type' => @content_type})
+      request_hash[:headers] = headers.merge({'Content-Type' => @content_type})
       request_hash[:body] = params.to_json
 
       IronCore::Logger.debug 'IronCore', "PUT #{url + method} with params='#{request_hash.to_s}'"
@@ -129,7 +127,7 @@ module IronCore
 
     def delete(method, params = {})
       request_hash = {}
-      request_hash[:headers] = common_headers.merge(@headers)
+      request_hash[:headers] = headers
       request_hash[:params] = params
 
       IronCore::Logger.debug 'IronCore', "DELETE #{url + method} with params='#{request_hash.to_s}'"
@@ -139,7 +137,7 @@ module IronCore
 
     def post_file(method, file_field, file, params_field, params = {})
       request_hash = {}
-      request_hash[:headers] = common_headers.merge(@headers)
+      request_hash[:headers] = headers
       request_hash[:body] = {params_field => params.to_json, file_field => file}
 
       IronCore::Logger.debug 'IronCore', "POST #{url + method} with params='#{request_hash.to_s}'"
@@ -157,6 +155,12 @@ module IronCore
       return body unless parse_json
 
       JSON.parse(body)
+    end
+
+    def check_id(id, name = 'id', length = 24)
+      if (not id.is_a?(String)) || id.length != length
+        IronCore::Logger.error 'IronCore', "Expecting #{length} symbol #{name} string", IronCore::Error
+      end
     end
   end
 end
