@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rest', '>= 1.2.1'
+gem 'rest', '>= 2.0.0'
 
 group :development do
   gem 'rake'
