@@ -110,7 +110,11 @@ module IronCore
       return if config_file.nil?
 
       if File.exists?(File.expand_path(config_file))
-        config = JSON.load(File.read(File.expand_path(config_file)))
+        begin
+          config = JSON.load(File.read(File.expand_path(config_file)))
+        rescue
+          return
+        end
 
         unless @env.nil?
           load_from_hash(config_file, get_sub_hash(config, [@env, "#{company}_#{product}"]))
