@@ -6,6 +6,7 @@ require_relative 'response_error'
 module IronCore
   class Client
     attr_accessor :content_type
+    attr_accessor :env
 
     def initialize(company, product, options = {}, default_options = {}, extra_options_list = [])
       @options_list = [:scheme, :host, :port, :user_agent, :http_gem] + extra_options_list
@@ -24,15 +25,38 @@ module IronCore
         end
       end
 
+      @env = options[:env] || options['env']
+      @env ||= ENV[company.upcase + '_' + product.upcase + '_ENV'] || ENV[product.upcase + '_ENV'] || ENV[company.upcase + '_ENV']
+
+      IronCore::Logger.info 'IronCore', "Setting env to '#{@env}'" unless @env.nil?
+
       load_from_hash('params', options)
+
       load_from_config(company, product, options[:config] || options['config'])
+
       load_from_config(company, product, ENV[company.upcase + '_' + product.upcase + '_CONFIG'])
+      load_from_config(company, product, ENV[product.upcase + '_CONFIG'])
       load_from_config(company, product, ENV[company.upcase + '_CONFIG'])
+
       load_from_env(company.upcase + '_' + product.upcase)
+      load_from_env(product.upcase)
       load_from_env(company.upcase)
-      load_from_config(company, product, ".#{company}.json")
-      load_from_config(company, product, "#{company}.json")
-      load_from_config(company, product, "~/.#{company}.json")
+
+      suffixes = []
+      suffixes << "-#{env}" unless @env.nil?
+      suffixes << ''
+
+      suffixes.each do |suffix|
+        ['.json', ''].each do |ext|
+          ["#{company}-#{product}", product, company].each do |config_base|
+            load_from_config(company, product, "#{config_base}#{suffix}#{ext}")
+            load_from_config(company, product, ".#{config_base}#{suffix}#{ext}")
+            load_from_config(company, product, "~/#{config_base}#{suffix}#{ext}")
+            load_from_config(company, product, "~/.#{config_base}#{suffix}#{ext}")
+          end
+        end
+      end
+
       load_from_hash('defaults', default_options)
       load_from_hash('defaults', {:user_agent => 'iron_core_ruby-' + IronCore.version})
 
@@ -65,15 +89,43 @@ module IronCore
       end
     end
 
+    def get_sub_hash(hash, subs)
+      return nil if hash.nil?
+
+      subs.each do |sub|
+        return nil if hash[sub].nil?
+
+        hash = hash[sub]
+      end
+
+      hash
+    end
+
     def load_from_config(company, product, config_file)
       return if config_file.nil?
 
       if File.exists?(File.expand_path(config_file))
         config = JSON.load(File.read(File.expand_path(config_file)))
 
-        load_from_hash(config_file, config["#{company}_#{product}"])
-        load_from_hash(config_file, config[company])
-        load_from_hash(config_file, config)
+        unless @env.nil?
+          load_from_hash(config_file, get_sub_hash(config, [@env, "#{company}_#{product}"]))
+          load_from_hash(config_file, get_sub_hash(config, [@env, company, product]))
+          load_from_hash(config_file, get_sub_hash(config, [@env, product]))
+          load_from_hash(config_file, get_sub_hash(config, [@env, company]))
+
+          load_from_hash(config_file, get_sub_hash(config, ["#{company}_#{product}", @env]))
+          load_from_hash(config_file, get_sub_hash(config, [company, product, @env]))
+          load_from_hash(config_file, get_sub_hash(config, [product, @env]))
+          load_from_hash(config_file, get_sub_hash(config, [company, @env]))
+
+          load_from_hash(config_file, get_sub_hash(config, [@env]))
+        end
+
+        load_from_hash(config_file, get_sub_hash(config, ["#{company}_#{product}"]))
+        load_from_hash(config_file, get_sub_hash(config, [company, product]))
+        load_from_hash(config_file, get_sub_hash(config, [product]))
+        load_from_hash(config_file, get_sub_hash(config, [company]))
+        load_from_hash(config_file, get_sub_hash(config, []))
       end
     end
 
