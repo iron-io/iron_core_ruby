@@ -26,7 +26,7 @@ module IronCore
       end
 
       @env = options[:env] || options['env']
-      @env ||= ENV[company.upcase + '_' + product.upcase + '_ENV'] || ENV[product.upcase + '_ENV'] || ENV[company.upcase + '_ENV']
+      @env ||= ENV[company.upcase + '_' + product.upcase + '_ENV'] || ENV[company.upcase + '_ENV']
 
       IronCore::Logger.info 'IronCore', "Setting env to '#{@env}'" unless @env.nil?
 
@@ -35,25 +35,23 @@ module IronCore
       load_from_config(company, product, options[:config] || options['config'])
 
       load_from_config(company, product, ENV[company.upcase + '_' + product.upcase + '_CONFIG'])
-      load_from_config(company, product, ENV[product.upcase + '_CONFIG'])
       load_from_config(company, product, ENV[company.upcase + '_CONFIG'])
 
       load_from_env(company.upcase + '_' + product.upcase)
-      load_from_env(product.upcase)
       load_from_env(company.upcase)
 
       suffixes = []
 
       unless @env.nil?
-        suffixes << "-#{env}"
-        suffixes << "_#{env}"
+        suffixes << "-#{@env}"
+        suffixes << "_#{@env}"
       end
       
       suffixes << ''
 
       suffixes.each do |suffix|
-        ['.json', ''].each do |ext|
-          ["#{company}-#{product}", "#{company}_#{product}", product, company].each do |config_base|
+        ['.json'].each do |ext|
+          ["#{company}-#{product}", "#{company}_#{product}", company].each do |config_base|
             load_from_config(company, product, "#{config_base}#{suffix}#{ext}")
             load_from_config(company, product, ".#{config_base}#{suffix}#{ext}")
             load_from_config(company, product, "~/#{config_base}#{suffix}#{ext}")
@@ -110,11 +108,15 @@ module IronCore
       return if config_file.nil?
 
       if File.exists?(File.expand_path(config_file))
+        config_data = '{}'
+
         begin
-          config = JSON.load(File.read(File.expand_path(config_file)))
+          config_data = File.read(File.expand_path(config_file))
         rescue
           return
         end
+
+        config = JSON.parse(config_data)
 
         unless @env.nil?
           load_from_hash(config_file, get_sub_hash(config, [@env, "#{company}_#{product}"]))
