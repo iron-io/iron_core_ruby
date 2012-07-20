@@ -43,12 +43,17 @@ module IronCore
       load_from_env(company.upcase)
 
       suffixes = []
-      suffixes << "-#{env}" unless @env.nil?
+
+      unless @env.nil?
+        suffixes << "-#{env}"
+        suffixes << "_#{env}"
+      end
+      
       suffixes << ''
 
       suffixes.each do |suffix|
         ['.json', ''].each do |ext|
-          ["#{company}-#{product}", product, company].each do |config_base|
+          ["#{company}-#{product}", "#{company}_#{product}", product, company].each do |config_base|
             load_from_config(company, product, "#{config_base}#{suffix}#{ext}")
             load_from_config(company, product, ".#{config_base}#{suffix}#{ext}")
             load_from_config(company, product, "~/#{config_base}#{suffix}#{ext}")
