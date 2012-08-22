@@ -154,8 +154,12 @@ module IronCore
       {'User-Agent' => @user_agent}
     end
 
-    def url
+    def base_url
       "#{scheme}://#{host}:#{port}/"
+    end
+
+    def url(method)
+      base_url + method
     end
 
     def get(method, params = {})
@@ -163,9 +167,9 @@ module IronCore
       request_hash[:headers] = headers
       request_hash[:params] = params
 
-      IronCore::Logger.debug 'IronCore', "GET #{url + method} with params='#{request_hash.to_s}'"
+      IronCore::Logger.debug 'IronCore', "GET #{url(method)} with params='#{request_hash.to_s}'"
 
-      @rest.get(url + method, request_hash)
+      @rest.get(url(method), request_hash)
     end
 
     def post(method, params = {})
@@ -173,9 +177,9 @@ module IronCore
       request_hash[:headers] = headers.merge({'Content-Type' => @content_type})
       request_hash[:body] = params.to_json
 
-      IronCore::Logger.debug 'IronCore', "POST #{url + method} with params='#{request_hash.to_s}'" 
+      IronCore::Logger.debug 'IronCore', "POST #{base_url + method} with params='#{request_hash.to_s}'"
 
-      @rest.post(url + method, request_hash)
+      @rest.post(base_url + method, request_hash)
     end
 
     def put(method, params={})
@@ -183,9 +187,9 @@ module IronCore
       request_hash[:headers] = headers.merge({'Content-Type' => @content_type})
       request_hash[:body] = params.to_json
 
-      IronCore::Logger.debug 'IronCore', "PUT #{url + method} with params='#{request_hash.to_s}'"
+      IronCore::Logger.debug 'IronCore', "PUT #{base_url + method} with params='#{request_hash.to_s}'"
 
-      @rest.put(url + method, request_hash)
+      @rest.put(base_url + method, request_hash)
     end
 
     def delete(method, params = {})
@@ -193,9 +197,9 @@ module IronCore
       request_hash[:headers] = headers
       request_hash[:params] = params
 
-      IronCore::Logger.debug 'IronCore', "DELETE #{url + method} with params='#{request_hash.to_s}'"
+      IronCore::Logger.debug 'IronCore', "DELETE #{base_url + method} with params='#{request_hash.to_s}'"
 
-      @rest.delete(url + method, request_hash)
+      @rest.delete(base_url + method, request_hash)
     end
 
     def post_file(method, file_field, file, params_field, params = {})
@@ -203,9 +207,9 @@ module IronCore
       request_hash[:headers] = headers
       request_hash[:body] = {params_field => params.to_json, file_field => file}
 
-      IronCore::Logger.debug 'IronCore', "POST #{url + method} with params='#{request_hash.to_s}'"
+      IronCore::Logger.debug 'IronCore', "POST #{base_url + method} with params='#{request_hash.to_s}'"
 
-      @rest.post_file(url + method, request_hash)
+      @rest.post_file(base_url + method, request_hash)
     end
 
     def parse_response(response, parse_json = true)
