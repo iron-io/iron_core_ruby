@@ -52,8 +52,10 @@ module IronCore
       suffixes.each do |suffix|
         ['.json'].each do |ext|
           ["#{company}-#{product}", "#{company}_#{product}", company].each do |config_base|
-            load_from_config(company, product, "#{config_base}#{suffix}#{ext}")
-            load_from_config(company, product, ".#{config_base}#{suffix}#{ext}")
+            load_from_config(company, product, "#{Dir.pwd}/#{config_base}#{suffix}#{ext}")
+            load_from_config(company, product, "#{Dir.pwd}/.#{config_base}#{suffix}#{ext}")
+            load_from_config(company, product, "#{Dir.pwd}/config/#{config_base}#{suffix}#{ext}")
+            load_from_config(company, product, "#{Dir.pwd}/config/.#{config_base}#{suffix}#{ext}")
             load_from_config(company, product, "~/#{config_base}#{suffix}#{ext}")
             load_from_config(company, product, "~/.#{config_base}#{suffix}#{ext}")
           end
