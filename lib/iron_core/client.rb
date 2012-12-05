@@ -52,8 +52,10 @@ module IronCore
       suffixes.each do |suffix|
         ['.json'].each do |ext|
           ["#{company}-#{product}", "#{company}_#{product}", company].each do |config_base|
-            load_from_config(company, product, "#{config_base}#{suffix}#{ext}")
-            load_from_config(company, product, ".#{config_base}#{suffix}#{ext}")
+            load_from_config(company, product, "#{Dir.pwd}/#{config_base}#{suffix}#{ext}")
+            load_from_config(company, product, "#{Dir.pwd}/.#{config_base}#{suffix}#{ext}")
+            load_from_config(company, product, "#{Dir.pwd}/config/#{config_base}#{suffix}#{ext}")
+            load_from_config(company, product, "#{Dir.pwd}/config/.#{config_base}#{suffix}#{ext}")
             load_from_config(company, product, "~/#{config_base}#{suffix}#{ext}")
             load_from_config(company, product, "~/.#{config_base}#{suffix}#{ext}")
           end
@@ -192,9 +194,9 @@ module IronCore
       @rest.put(base_url + method, request_hash)
     end
 
-    def delete(method, params = {})
+    def delete(method, params = {}, headers2={})
       request_hash = {}
-      request_hash[:headers] = headers
+      request_hash[:headers] = headers.merge(headers2)
       request_hash[:params] = params
 
       IronCore::Logger.debug 'IronCore', "DELETE #{base_url + method} with params='#{request_hash.to_s}'"
