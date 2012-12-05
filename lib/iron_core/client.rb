@@ -197,7 +197,7 @@ module IronCore
     def delete(method, params = {}, headers2={})
       request_hash = {}
       request_hash[:headers] = headers.merge(headers2)
-      request_hash[:params] = params
+      request_hash[:body] = params.to_json
 
       IronCore::Logger.debug 'IronCore', "DELETE #{base_url + method} with params='#{request_hash.to_s}'"
 
