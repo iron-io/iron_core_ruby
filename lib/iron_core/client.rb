@@ -1,7 +1,7 @@
 require 'rest'
 require 'json'
 
-require_relative 'response_error'
+require 'iron_core/response_error'
 
 module IronCore
   class Client

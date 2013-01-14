@@ -1,4 +1,4 @@
-require_relative 'error'
+require 'iron_core/error'
 
 module IronCore
   class ResponseError < IronCore::Error
