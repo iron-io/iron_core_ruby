@@ -67,7 +67,8 @@ module IronCore
 
       @content_type = 'application/json'
 
-      http_gem = @http_gem.nil? ? nil : @http_gem.to_sym
+      default_http_gem = RUBY_VERSION.split('.')[1].to_i == 8 ? :excon : nil
+      http_gem = @http_gem.nil? ? default_http_gem : @http_gem.to_sym
 
       @rest = Rest::Client.new(:gem => http_gem)
     end
