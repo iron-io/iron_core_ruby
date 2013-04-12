@@ -1,5 +1,6 @@
 require 'rest'
 require 'json'
+require 'yaml'
 
 require 'iron_core/response_error'
 
@@ -50,7 +51,7 @@ module IronCore
       suffixes << ''
 
       suffixes.each do |suffix|
-        ['.json'].each do |ext|
+        ['.json', '.yml'].each do |ext|
           ["#{company}-#{product}", "#{company}_#{product}", company].each do |config_base|
             load_from_config(company, product, "#{Dir.pwd}/#{config_base}#{suffix}#{ext}")
             load_from_config(company, product, "#{Dir.pwd}/.#{config_base}#{suffix}#{ext}")
@@ -119,7 +120,13 @@ module IronCore
           return
         end
 
-        config = JSON.parse(config_data)
+        config = nil
+
+        if config_file.end_with?('.yml')
+          config = YAML.load(config_data)
+        else
+          config = JSON.parse(config_data)
+        end
 
         unless @env.nil?
           load_from_hash(config_file, get_sub_hash(config, [@env, "#{company}_#{product}"]))
