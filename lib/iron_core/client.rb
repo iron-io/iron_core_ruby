@@ -225,7 +225,7 @@ module IronCore
     def parse_response(response, parse_json = true)
       IronCore::Logger.debug 'IronCore', "GOT #{response.code} with params='#{response.body}'"
 
-      raise IronCore::ResponseError.new(response) if response.code != 200
+      raise IronCore::ResponseError.new(response) if (response.code < 200 || response.code >= 300)
 
       body = String.new(response.body)
 
