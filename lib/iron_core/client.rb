@@ -205,6 +205,9 @@ module IronCore
     def delete(method, params = {}, headers2={})
       request_hash = {}
       request_hash[:headers] = headers.merge(headers2)
+      if params.size > 0
+        request_hash[:headers].merge!({'Content-Type' => @content_type})
+      end
       request_hash[:body] = params.to_json
 
       IronCore::Logger.debug 'IronCore', "DELETE #{base_url + method} with params='#{request_hash.to_s}'"
