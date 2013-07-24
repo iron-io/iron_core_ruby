@@ -225,6 +225,29 @@ module IronCore
       @rest.post_file(base_url + method, request_hash)
     end
 
+    def stream_get(method, params = {})
+      request_hash = {}
+      request_hash[:headers] = headers
+      request_hash[:params] = params
+
+      uri = url(method)
+      unless request_hash[:params].empty?
+        query_string = request_hash[:params].collect { |k, v| "#{k.to_s}=#{CGI::escape(v.to_s)}" }.join('&')
+        uri += "?#{query_string}"
+      end
+
+      IronCore::Logger.debug 'IronCore', "Streaming GET #{uri} with params='#{request_hash.to_s}'"
+
+      req = URI(uri)
+      Net::HTTP.start(req.hostname, req.port, use_ssl: req.scheme == 'https') do |http|
+        http.request_get(req, request_hash[:headers]) do |res|
+          res.read_body do |chunk|
+            yield(chunk)
+          end
+        end
+      end
+    end
+
     def parse_response(response, parse_json = true)
       IronCore::Logger.debug 'IronCore', "GOT #{response.code} with params='#{response.body}'"
 
