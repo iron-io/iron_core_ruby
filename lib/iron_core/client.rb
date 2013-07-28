@@ -239,7 +239,7 @@ module IronCore
       IronCore::Logger.debug 'IronCore', "Streaming GET #{uri} with params='#{request_hash.to_s}'"
 
       req = URI(uri)
-      Net::HTTP.start(req.hostname, req.port, use_ssl: req.scheme == 'https') do |http|
+      Net::HTTP.start(req.hostname, req.port, :use_ssl => (req.scheme == 'https')) do |http|
         http.request_get(req, request_hash[:headers]) do |res|
           res.read_body do |chunk|
             yield(chunk)
