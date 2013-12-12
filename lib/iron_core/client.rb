@@ -47,7 +47,7 @@ module IronCore
         suffixes << "-#{@env}"
         suffixes << "_#{@env}"
       end
-      
+
       suffixes << ''
 
       suffixes.each do |suffix|
@@ -179,7 +179,26 @@ module IronCore
 
       IronCore::Logger.debug 'IronCore', "GET #{url(method)} with params='#{request_hash.to_s}'"
 
-      @rest.get(url(method), request_hash)
+      begin
+        @rest.get(url(method), request_hash)
+      rescue Rest::HttpError => ex
+        extract_error_msg(ex)
+      end
+    end
+
+    def extract_error_msg(ex)
+      if ex.response && ex.response.body
+        begin
+          bodyparsed = JSON.parse(ex.response.body)
+          msg = bodyparsed["msg"]
+          if msg
+            ex.msg = msg
+          end
+        rescue => ex
+          # ignore
+        end
+      end
+      raise ex
     end
 
     def post(method, params = {})
@@ -189,7 +208,11 @@ module IronCore
 
       IronCore::Logger.debug 'IronCore', "POST #{base_url + method} with params='#{request_hash.to_s}'"
 
+      begin
       @rest.post(base_url + method, request_hash)
+      rescue Rest::HttpError => ex
+        extract_error_msg(ex)
+      end
     end
 
     def put(method, params={})
@@ -199,7 +222,11 @@ module IronCore
 
       IronCore::Logger.debug 'IronCore', "PUT #{base_url + method} with params='#{request_hash.to_s}'"
 
+      begin
       @rest.put(base_url + method, request_hash)
+      rescue Rest::HttpError => ex
+        extract_error_msg(ex)
+      end
     end
 
     def delete(method, params = {}, headers2={})
@@ -212,7 +239,11 @@ module IronCore
 
       IronCore::Logger.debug 'IronCore', "DELETE #{base_url + method} with params='#{request_hash.to_s}'"
 
+      begin
       @rest.delete(base_url + method, request_hash)
+      rescue Rest::HttpError => ex
+        extract_error_msg(ex)
+      end
     end
 
     def post_file(method, file_field, file, params_field, params = {})
@@ -222,7 +253,11 @@ module IronCore
 
       IronCore::Logger.debug 'IronCore', "POST #{base_url + method} with params='#{request_hash.to_s}'"
 
+      begin
       @rest.post_file(base_url + method, request_hash)
+      rescue Rest::HttpError => ex
+        extract_error_msg(ex)
+      end
     end
 
     def stream_get(method, params = {})
