@@ -57,8 +57,12 @@ module IronCore
             load_from_config(company, product, "#{Dir.pwd}/.#{config_base}#{suffix}#{ext}")
             load_from_config(company, product, "#{Dir.pwd}/config/#{config_base}#{suffix}#{ext}")
             load_from_config(company, product, "#{Dir.pwd}/config/.#{config_base}#{suffix}#{ext}")
-            load_from_config(company, product, "~/#{config_base}#{suffix}#{ext}")
-            load_from_config(company, product, "~/.#{config_base}#{suffix}#{ext}")
+            begin
+              load_from_config(company, product, "~/#{config_base}#{suffix}#{ext}")
+              load_from_config(company, product, "~/.#{config_base}#{suffix}#{ext}")
+            rescue Exception => ex
+              puts "Warning -- Unable to load from HOME: #{ex.message}"
+            end
           end
         end
       end
