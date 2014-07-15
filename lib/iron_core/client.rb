@@ -233,6 +233,20 @@ module IronCore
       end
     end
 
+    def patch(method, params={})
+      request_hash = {}
+      request_hash[:headers] = headers.merge({'Content-Type' => @content_type})
+      request_hash[:body] = params.to_json
+
+      IronCore::Logger.debug 'IronCore', "PUT #{base_url + method} with params='#{request_hash.to_s}'"
+
+      begin
+        @rest.patch(base_url + method, request_hash)
+      rescue Rest::HttpError => ex
+        extract_error_msg(ex)
+      end
+    end
+
     def delete(method, params = {}, headers2={})
       request_hash = {}
       request_hash[:headers] = headers.merge(headers2)
