@@ -12,8 +12,7 @@ module IronCore
     end
 
     def token
-      if @token.nil?
-
+      if @token.nil? || (Time.now - @local_expirest_at > -10)
         payload = {
             auth: {
                 tenantName: @tenant,
@@ -23,17 +22,21 @@ module IronCore
                 }
             }
         }
+
         response = post(@server + 'tokens', payload)
         result = JSON.parse(response.body)
         token_data = result['access']['token']
 
-        @token = token_data['id']
+        issued_at = Time.parse(token_data['issued_at'] + " UTC")
+        expires = Time.parse(token_data['expires'] + " UTC")
+        duration = (expires - issued_at).to_i
 
+        @local_expirest_at = Time.now + duration
+        @token = token_data['id']
+        puts "KEYSTONE TOKEN #{@token}"
       end
 
-      puts "KEYSTONE TOKEN #{@token}"
       @token
-      #"O7KrMTwmw997iq0KzL7v"
     end
 
     def post(path, params = {})
@@ -42,6 +45,5 @@ module IronCore
       request_hash[:body] = params.to_json
       @rest_client.post(path, request_hash)
     end
-
   end
 end
