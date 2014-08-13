@@ -1,3 +1,5 @@
 require 'iron_core/version'
 require 'iron_core/iron_logger'
 require 'iron_core/client'
+require 'iron_core/iron_token_provider'
+require 'iron_core/keystone_token_provider'

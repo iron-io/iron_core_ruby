@@ -10,7 +10,7 @@ module IronCore
     attr_accessor :env
 
     def initialize(company, product, options = {}, default_options = {}, extra_options_list = [])
-      @options_list = [:scheme, :host, :port, :user_agent, :http_gem] + extra_options_list
+      @options_list = [:scheme, :host, :port, :user_agent, :http_gem, :keystone] + extra_options_list
 
       metaclass = class << self
         self
@@ -76,10 +76,26 @@ module IronCore
       http_gem = @http_gem.nil? ? default_http_gem : @http_gem.to_sym
 
       @rest = Rest::Client.new(:gem => http_gem)
+
+      keystone_keys_list = [:username, :password, :tenant, :server]
+      if !self.keystone.nil? && self.keystone.class == Hash && (self.keystone.keys & keystone_keys_list).length == 4
+        @token_provider = IronCore::KeystoneTokenProvider.new(@rest, self.keystone)
+      else
+        @token_provider = IronCore::IronTokenProvider.new(@token)
+      end
     end
 
     def set_option(source, name, value)
       if send(name.to_s).nil? && (not value.nil?)
+        if value.class == Hash
+          value.keys.each do |key|
+            if key.class == String
+              value[key.to_sym] = value[key]
+              value.delete(key)
+            end
+          end
+        end
+
         IronCore::Logger.debug 'IronCore', "Setting #{name} to '#{value}' from #{source}"
 
         send(name.to_s + '=', value)
@@ -227,7 +243,7 @@ module IronCore
       IronCore::Logger.debug 'IronCore', "PUT #{base_url + method} with params='#{request_hash.to_s}'"
 
       begin
-      @rest.put(base_url + method, request_hash)
+        @rest.put(base_url + method, request_hash)
       rescue Rest::HttpError => ex
         extract_error_msg(ex)
       end
