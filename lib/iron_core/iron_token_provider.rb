@@ -5,7 +5,6 @@ module IronCore
     end
 
     def token
-      puts "IRON TOKEN #{@token}"
       @token
     end
   end

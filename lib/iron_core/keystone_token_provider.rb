@@ -1,5 +1,3 @@
-require 'keystone/v2_0/client'
-
 module IronCore
   class KeystoneTokenProvider
     def initialize(client, options)
@@ -33,7 +31,6 @@ module IronCore
 
         @local_expirest_at = Time.now + duration
         @token = token_data['id']
-        puts "KEYSTONE TOKEN #{@token}"
       end
 
       @token
