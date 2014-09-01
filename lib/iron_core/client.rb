@@ -77,9 +77,14 @@ module IronCore
 
       @rest = Rest::Client.new(:gem => http_gem)
 
-      keystone_keys_list = [:username, :password, :tenant, :server]
-      if !self.keystone.nil? && self.keystone.class == Hash && (self.keystone.keys & keystone_keys_list).length == 4
-        @token_provider = IronCore::KeystoneTokenProvider.new(@rest, self.keystone)
+      keystone_required_keys_list = [:username, :password, :tenant, :server]
+      if !self.keystone.nil?
+        if self.keystone.class == Hash && (self.keystone.keys & keystone_required_keys_list).length == 4
+          @token_provider = IronCore::KeystoneTokenProvider.new(@rest, self.keystone)
+        else
+          missing = (keystone_required_keys_list - self.keystone.keys).map{|i| i.to_s}.join(', ')
+          IronCore::Logger.error 'IronCore', "Keystone keys missing #{missing}", IronCore::Error
+        end
       else
         @token_provider = IronCore::IronTokenProvider.new(@token)
       end
