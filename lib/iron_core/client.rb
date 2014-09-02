@@ -83,7 +83,8 @@ module IronCore
           @token_provider = IronCore::KeystoneTokenProvider.new(@rest, self.keystone)
         else
           missing = (keystone_required_keys_list - self.keystone.keys).map{|i| i.to_s}.join(', ')
-          IronCore::Logger.error 'IronCore', "Keystone keys missing #{missing}", IronCore::Error
+          IronCore::Logger.error 'IronCore', "Keystone keys missing: #{missing}", IronCore::Error
+          raise IronCore::ConfigurationError.new("Keystone keys missing: #{missing}")
         end
       else
         @token_provider = IronCore::IronTokenProvider.new(@token)
