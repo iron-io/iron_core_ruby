@@ -13,7 +13,7 @@ module IronCore
       if @token.nil? || (Time.now - @local_expirest_at > -10)
         payload = {
             auth: {
-                tenantName: @tenant,
+                tenantId: @tenant,
                 passwordCredentials: {
                     username: @username,
                     password: @password
