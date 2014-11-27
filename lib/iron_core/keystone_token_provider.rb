@@ -2,24 +2,29 @@ module IronCore
   class KeystoneTokenProvider
     def initialize(client, options)
       @rest_client = client.dup
-      @token = nil
+      @token = options[:tenant_token] # Way to bypass fetching a token from keystone api
       @server = options[:server]
       @tenant = options[:tenant]
       @username = options[:username]
       @password = options[:password]
+      @user_token = options[:token]
     end
 
     def token
-      if @token.nil? || (Time.now - @local_expirest_at > -10)
+      if @token.nil? || (@local_expires_at && (Time.now - @local_expires_at > -10))
         payload = {
-            auth: {
-                tenantId: @tenant,
-                passwordCredentials: {
-                    username: @username,
-                    password: @password
-                }
-            }
+          auth: {
+            tenantId: @tenant,
+          }
         }
+        if @username.to_s != ''
+          payload[:auth][:passwordCredentials] = {
+            username: @username,
+            password: @password
+          }
+        elsif @user_token.to_s != ''
+          payload[:auth][:token] = {id: @user_token}
+        end
 
         response = post(@server + 'tokens', payload)
         result = JSON.parse(response.body)
@@ -29,7 +34,7 @@ module IronCore
         expires = Time.parse(token_data['expires'] + " UTC")
         duration = (expires - issued_at).to_i
 
-        @local_expirest_at = Time.now + duration
+        @local_expires_at = Time.now + duration
         @token = token_data['id']
       end
 

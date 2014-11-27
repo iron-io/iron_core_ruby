@@ -77,15 +77,15 @@ module IronCore
 
       @rest = Rest::Client.new(:gem => http_gem)
 
-      keystone_required_keys_list = [:username, :password, :tenant, :server]
-      if !self.keystone.nil?
-        if self.keystone.class == Hash && (self.keystone.keys & keystone_required_keys_list).length == 4
-          @token_provider = IronCore::KeystoneTokenProvider.new(@rest, self.keystone)
-        else
-          missing = (keystone_required_keys_list - self.keystone.keys).map{|i| i.to_s}.join(', ')
-          IronCore::Logger.error 'IronCore', "Keystone keys missing: #{missing}", IronCore::Error
-          raise IronCore::ConfigurationError.new("Keystone keys missing: #{missing}")
+      if self.keystone && self.keystone.is_a?(Hash)
+        raise_keystone_config_error('server') if self.keystone[:server].nil?
+        raise_keystone_config_error('tenant') if self.keystone[:tenant].nil?
+        if self.keystone[:token].nil? && self.keystone[:tenant_token].nil? &&
+          (self.keystone[:username].nil? && self.keystone[:password].nil?)
+          raise_keystone_config_error('username, password or token')
         end
+
+        @token_provider = IronCore::KeystoneTokenProvider.new(@rest, self.keystone)
       else
         @token_provider = IronCore::IronTokenProvider.new(@token)
       end
@@ -339,6 +339,11 @@ module IronCore
       if (not id.is_a?(String)) || id.length != length
         IronCore::Logger.error 'IronCore', "Expecting #{length} symbol #{name} string", IronCore::Error
       end
+    end
+
+    def raise_keystone_config_error(missing)
+      IronCore::Logger.error 'IronCore', "Keystone keys missing: #{missing}", IronCore::Error
+      raise IronCore::ConfigurationError.new("Keystone keys missing: #{missing}")
     end
   end
 end
