@@ -10,7 +10,7 @@ module IronCore
     attr_accessor :env
 
     def initialize(company, product, options = {}, default_options = {}, extra_options_list = [])
-      @options_list = [:scheme, :host, :port, :user_agent, :http_gem, :keystone] + extra_options_list
+      @options_list = [:scheme, :host, :port, :user_agent, :http_gem, :keystone, :http_proxy] + extra_options_list
 
       metaclass = class << self
         self
@@ -75,7 +75,9 @@ module IronCore
       default_http_gem = RUBY_VERSION.split('.')[1].to_i == 8 ? :rest_client : nil
       http_gem = @http_gem.nil? ? default_http_gem : @http_gem.to_sym
 
-      @rest = Rest::Client.new(:gem => http_gem)
+      rest_options = {:gem => http_gem}
+      rest_options[:http_proxy] = options[:http_proxy] if options[:http_proxy]
+      @rest = Rest::Client.new(rest_options)
 
       if self.keystone && self.keystone.is_a?(Hash)
         raise_keystone_config_error('server') if self.keystone[:server].nil?
