@@ -8,6 +8,7 @@ module IronCore
   class Client
     attr_accessor :content_type
     attr_accessor :env
+    attr_reader :rest
 
     def initialize(company, product, options = {}, default_options = {}, extra_options_list = [])
       @options_list = [:scheme, :host, :port, :user_agent, :http_gem, :keystone, :http_proxy] + extra_options_list
