@@ -1,22 +1,22 @@
 PATH
   remote: .
   specs:
-    iron_core (1.0.4)
-      rest (>= 2.6.4)
+    iron_core (1.0.5)
+      rest (>= 3.0.3)
 
 GEM
   remote: http://rubygems.org/
   specs:
-    minitest (5.0.6)
+    minitest (5.5.1)
     net-http-persistent (2.9.4)
-    netrc (0.7.7)
-    rake (10.1.0)
-    rest (2.7.1)
+    netrc (0.10.3)
+    power_assert (0.2.2)
+    rake (10.4.2)
+    rest (3.0.3)
       net-http-persistent (>= 2.9.1)
-      rest_client (>= 1.7.1)
-    rest_client (1.7.3)
-      netrc (~> 0.7.7)
-    test-unit (2.5.5)
+      netrc
+    test-unit (3.0.9)
+      power_assert
 
 PLATFORMS
   ruby
