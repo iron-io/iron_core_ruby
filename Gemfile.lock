@@ -1,20 +1,34 @@
+GIT
+  remote: git://github.com/iron-io/rest.git
+  revision: 8956818f33698dc79edc54a9f6f7746999619cf1
+  branch: ruby-1.8
+  specs:
+    rest (3.0.8)
+      net-http-persistent (>= 2.9.1)
+      netrc
+      pry
+
 PATH
   remote: .
   specs:
-    iron_core (1.0.5)
-      rest (>= 3.0.3)
+    iron_core (1.0.8)
+      rest (>= 3.0.4)
 
 GEM
   remote: http://rubygems.org/
   specs:
+    coderay (1.1.0)
+    method_source (0.8.2)
     minitest (5.5.1)
     net-http-persistent (2.9.4)
     netrc (0.10.3)
-    power_assert (0.2.2)
+    power_assert (0.2.3)
+    pry (0.10.1)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
     rake (10.4.2)
-    rest (3.0.3)
-      net-http-persistent (>= 2.9.1)
-      netrc
+    slop (3.6.0)
     test-unit (3.0.9)
       power_assert
 
@@ -25,4 +39,5 @@ DEPENDENCIES
   iron_core!
   minitest
   rake
+  rest!
   test-unit
