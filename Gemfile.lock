@@ -11,8 +11,8 @@ GIT
 PATH
   remote: .
   specs:
-    iron_core (1.0.10)
-      rest (= 3.0.9)
+    iron_core (1.0.11)
+      rest
 
 GEM
   remote: http://rubygems.org/
