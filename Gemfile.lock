@@ -1,18 +1,18 @@
 GIT
   remote: git://github.com/iron-io/rest.git
-  revision: 8956818f33698dc79edc54a9f6f7746999619cf1
+  revision: 1e02ba1b8790716152c15220f1a102c6c0307ab8
   branch: ruby-1.8
   specs:
-    rest (3.0.8)
+    rest (3.0.9)
       net-http-persistent (>= 2.9.1)
       netrc
-      pry
+      pry (= 0.9)
 
 PATH
   remote: .
   specs:
     iron_core (1.0.10)
-      rest (>= 3.0.4)
+      rest (= 3.0.9)
 
 GEM
   remote: http://rubygems.org/
@@ -21,11 +21,15 @@ GEM
     method_source (0.8.2)
     net-http-persistent (2.9.4)
     netrc (0.10.3)
-    pry (0.10.1)
-      coderay (~> 1.1.0)
-      method_source (~> 0.8.1)
-      slop (~> 3.4)
-    slop (3.6.0)
+    pry (0.9.0)
+      coderay (>= 0.9.8)
+      method_source (>= 0.6.0)
+      ruby_parser (>= 2.0.5)
+      slop (~> 1.9.0)
+    ruby_parser (3.6.4)
+      sexp_processor (~> 4.1)
+    sexp_processor (4.4.5)
+    slop (1.9.1)
 
 PLATFORMS
   ruby
