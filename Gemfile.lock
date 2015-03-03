@@ -11,7 +11,7 @@ GIT
 PATH
   remote: .
   specs:
-    iron_core (1.0.8)
+    iron_core (1.0.10)
       rest (>= 3.0.4)
 
 GEM
@@ -19,25 +19,17 @@ GEM
   specs:
     coderay (1.1.0)
     method_source (0.8.2)
-    minitest (5.5.1)
     net-http-persistent (2.9.4)
     netrc (0.10.3)
-    power_assert (0.2.3)
     pry (0.10.1)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
-    rake (10.4.2)
     slop (3.6.0)
-    test-unit (3.0.9)
-      power_assert
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   iron_core!
-  minitest
-  rake
   rest!
-  test-unit

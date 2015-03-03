@@ -18,8 +18,8 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = Gem::Requirement.new(">= 1.8")
   gem.add_runtime_dependency "rest", ">= 3.0.4"
 
-  gem.add_development_dependency "test-unit"
-  gem.add_development_dependency "minitest"
-  gem.add_development_dependency "rake"
+  # gem.add_development_dependency "test-unit"
+  # gem.add_development_dependency "minitest"
+  # gem.add_development_dependency "rake"
 
 end
