@@ -318,7 +318,7 @@ module IronCore
 
       req = URI(uri)
       Net::HTTP.start(req.hostname, req.port, :use_ssl => (req.scheme == 'https')) do |http|
-        http.request_get(req, request_hash[:headers]) do |res|
+        http.request_get(req.to_s, request_hash[:headers]) do |res|
           res.read_body do |chunk|
             yield(chunk)
           end
