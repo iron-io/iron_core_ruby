@@ -223,7 +223,7 @@ module IronCore
           if msg
             ex.msg = msg
           end
-        rescue => ex
+        rescue => ex2
           # ignore
         end
       end
@@ -238,7 +238,7 @@ module IronCore
       IronCore::Logger.debug 'IronCore', "POST #{base_url + method} with params='#{request_hash.to_s}'"
 
       begin
-      @rest.post(base_url + method, request_hash)
+        @rest.post(base_url + method, request_hash)
       rescue Rest::HttpError => ex
         extract_error_msg(ex)
       end
