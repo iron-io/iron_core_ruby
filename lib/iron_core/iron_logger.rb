@@ -3,7 +3,7 @@ require 'logger'
 module IronCore
   module Logger
     def self.logger
-      unless @logger
+      unless defined?(@logger) && @logger
         @logger = ::Logger.new(STDOUT)
         @logger.level = ::Logger::INFO
       end
