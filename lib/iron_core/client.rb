@@ -18,6 +18,8 @@ module IronCore
       end
 
       @options_list.each do |option|
+        instance_variable_set('@' + option.to_s, nil)
+
         metaclass.send(:define_method, option.to_s) do
           instance_variable_get('@' + option.to_s)
         end
@@ -140,7 +142,7 @@ module IronCore
     def load_from_config(company, product, config_file)
       return if config_file.nil?
 
-      if File.exists?(File.expand_path(config_file))
+      if File.exist?(File.expand_path(config_file))
         config_data = '{}'
 
         begin
