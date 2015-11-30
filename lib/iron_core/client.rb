@@ -32,7 +32,7 @@ module IronCore
       @env = options[:env] || options['env']
       @env ||= ENV[company.upcase + '_' + product.upcase + '_ENV'] || ENV[company.upcase + '_ENV']
 
-      IronCore::Logger.info 'IronCore', "Setting env to '#{@env}'" unless @env.nil?
+      IronCore::Logger.debug 'IronCore', "Setting env to '#{@env}'" unless @env.nil?
 
       load_from_hash('params', options)
 
